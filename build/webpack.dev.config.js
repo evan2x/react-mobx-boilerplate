@@ -50,7 +50,7 @@ module.exports = merge.smartStrategy({
         test: /\.(?:woff2?|eot|ttf|svg)$/,
         loader: 'file-loader',
         options: {
-          name: 'fonts/[name]-[hash:10].[ext]'
+          name: 'fonts/[name].[ext]'
         }
       },
       {
