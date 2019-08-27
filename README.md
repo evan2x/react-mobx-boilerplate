@@ -18,45 +18,50 @@ $ npm run mock
 $ npm run lint
 ```
 
+
 ## Configuration
 
 ```shell
-$ open build/config.js
+$ open ./build.config.js
 ```
 
-### config.js
-
 ```js
-'use strict';
+const PORT = 8881;
+const MOCK_PORT = 8882;
 
-const config = {
+module.exports = {
   title: 'React boilerplate',
-  output: './dist', // 构建输出目录
-  port: 8091,
-  mock: {
-    contentBase: './mock', // mock数据目录
-    port: 8092 // mock服务器端口
-  }
-}
-
-/**
- * http proxy options
- * @see https://github.com/chimurai/http-proxy-middleware#options
- */
-config.proxy = {
-  // 以/api开头的请求代理到数据模拟服务
-  '/api/*': {
-    target: `http://localhost:${config.mock.port}/`,
-    secure: false
+  output: './dist',
+  vendor: {
+    // 打包到dll文件中，按需加载的模块不要写在这里
+    modules: [
+      'core-js/stable',
+      '@loadable/component',
+      'axios',
+      'react',
+      'react-dom',
+      'react-router',
+      'react-router-dom',
+      'mobx',
+      'mobx-react',
+      'nprogress'
+    ]
   },
-  '/github/api/*': {
-    target: 'https://api.github.com',
-    changeOrigin: true,
-    pathRewrite: {
-      '^/github/api': ''
+  port: PORT,
+  mockPort: MOCK_PORT,
+  proxy: {
+    // 以/api开头的请求代理到数据模拟服务
+    '/api/*': {
+      target: `http://localhost:${MOCK_PORT}/`,
+      secure: false
+    },
+    '/github/api/*': {
+      target: 'https://api.github.com',
+      changeOrigin: true,
+      pathRewrite: {
+        '^/github/api': ''
+      }
     }
   }
-};
-
-module.exports = config;
+}
 ```
