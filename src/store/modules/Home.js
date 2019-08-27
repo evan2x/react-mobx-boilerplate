@@ -1,10 +1,8 @@
-import { observable, action, runInAction } from "mobx";
-import axios from "axios";
+import { observable, action, runInAction } from 'mobx';
+import axios from 'axios';
 
-export default class HomeStore {
+export default class Home {
   @observable content = '';
-
-  constructor() {}
 
   @action
   async fetchIntro() {

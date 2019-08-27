@@ -1,10 +1,14 @@
-
 const OFF = 0;
 const WARN = 1;
 const ERROR = 2;
 
 module.exports = {
   parser: 'babel-eslint',
+  'parserOptions': {
+    'ecmaFeatures': {
+      'legacyDecorators': true
+    }
+  },
   plugins: [
     'react'
   ],
@@ -21,16 +25,25 @@ module.exports = {
     'no-param-reassign': OFF,
     'no-return-assign': OFF,
     'comma-dangle': [ERROR, 'only-multiline'],
+    'no-sequences': OFF,
     'import/no-extraneous-dependencies': OFF,
     'import/extensions': OFF,
     'import/no-unresolved': OFF,
-    'react/jsx-filename-extension': OFF
+    'import/prefer-default-export': OFF,
+    'react/jsx-one-expression-per-line': OFF,
+    'react/jsx-filename-extension': [WARN, { extensions: ['.jsx'] }],
+    'react/prop-types': OFF,
+    'react/forbid-prop-types': OFF,
+    'react/static-property-placement': OFF,
+    'react/state-in-constructor': OFF,
+    'react/jsx-props-no-spreading': OFF
   },
   env: {
     node: true,
     browser: true,
     es6: true,
     worker: true,
-    serviceworker: true
+    serviceworker: true,
+    jest: true
   }
 }

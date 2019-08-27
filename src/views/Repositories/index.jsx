@@ -3,35 +3,34 @@ import { inject, observer } from 'mobx-react';
 
 import styles from './style.css';
 
-@inject(({ repositoryStore }) => ({
-  repositoryStore
+@inject((stores) => ({
+  repository: stores.repository
 }))
 @observer
 export default class Repositories extends React.Component {
-
   state = {
     isFetching: true,
     error: ''
   }
 
   componentDidMount() {
-    const { repositoryStore } = this.props;
+    const { repository } = this.props;
 
-    repositoryStore.fetchRepos('evan2x')
+    repository.fetchRepos('evan2x')
       .catch((err) => {
         this.setState({
           error: err.message
-        })
+        });
       })
       .finally(() => {
         this.setState({
           isFetching: false
-        })
+        });
       });
   }
 
   renderTable() {
-    const { repositoryStore: { list: repos } } = this.props;
+    const { repository: { list: repos } } = this.props;
     const { isFetching, error } = this.state;
 
     if (isFetching) {
@@ -50,15 +49,16 @@ export default class Repositories extends React.Component {
       );
     }
 
-    return repos.map(repo => <tr key={repo.id}>
-      <td><a href={repo.url}>{repo.name}</a></td>
-      <td>{repo.lang}</td>
-      <td>{repo.desc}</td>
-    </tr>);
+    return repos.map((repo) => (
+      <tr key={repo.id}>
+        <td><a href={repo.url}>{repo.name}</a></td>
+        <td>{repo.lang}</td>
+        <td>{repo.desc}</td>
+      </tr>
+    ));
   }
 
   render() {
-
     return (
       <section>
         <h1>Repositories</h1>

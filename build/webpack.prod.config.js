@@ -1,13 +1,11 @@
-'use strict';
-
 const path = require('path');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
-const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const TerserPlugin = require('terser-webpack-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const imagemin = require('imagemin');
 const mozjpeg = require('imagemin-mozjpeg');
 const optipng = require('imagemin-optipng');
@@ -73,10 +71,12 @@ module.exports = merge.smartStrategy({
           {
             loader: 'css-loader',
             options: {
-              modules: true,
-              minimize: true,
-              camelCase: true,
-              localIdentName: '[name]__[local]--[hash:base64:5]'
+              importLoaders: 1,
+              modules: {
+                mode: 'local',
+                localIdentName: '[name]__[local]--[hash:base64:5]'
+              },
+              localsConvention: 'camelCaseOnly'
             }
           },
           postcssLoader
@@ -94,12 +94,10 @@ module.exports = merge.smartStrategy({
   },
   mode: 'production',
   optimization: {
-    sideEffects: false,
     minimizer: [
-      new UglifyJsPlugin({
+      new TerserPlugin({
         cache: true,
-        parallel: true,
-        sourceMap: false
+        parallel: true
       }),
       new OptimizeCSSAssetsPlugin()
     ]
@@ -107,8 +105,8 @@ module.exports = merge.smartStrategy({
   plugins: [
     new CopyWebpackPlugin([
       {
-        from: path.resolve(__dirname, '../static'),
-        to: 'static/',
+        from: path.resolve(__dirname, '../public'),
+        to: 'public/',
         ignore: ['.*'],
         transform(content, filePath) {
           if (/\.(?:png|jpe?g|gif)$/.test(filePath)) {

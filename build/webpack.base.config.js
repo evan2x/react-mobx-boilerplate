@@ -1,12 +1,12 @@
-'use strict';
-
 const path = require('path');
 const fs = require('fs');
 const chalk = require('chalk');
 const webpack = require('webpack');
-const config = require('./config');
 const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin');
+const WebpackBar = require('webpackbar');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
+const config = require('./config');
 const vendorManifestPath = path.resolve(config.vendor.path, 'vendor.json');
 
 if (!fs.existsSync(vendorManifestPath)) {
@@ -15,7 +15,7 @@ if (!fs.existsSync(vendorManifestPath)) {
 }
 
 const vendorManifest = require(vendorManifestPath);
-const vendorPath = path.resolve(config.vendor.path, vendorManifest.name + '.js');
+const vendorPath = path.resolve(config.vendor.path, `${vendorManifest.name}.js`);
 
 if (!vendorPath) {
   console.error(chalk.red('[Webpack] The vendor file is missing. Please run `npm run build:vendor`\n'));
@@ -24,7 +24,7 @@ if (!vendorPath) {
 
 module.exports = {
   entry: {
-    main: ['@babel/polyfill', './main.js']
+    main: ['core-js/stable', './main.js']
   },
   context: path.resolve('src'),
   output: {
@@ -33,17 +33,16 @@ module.exports = {
   },
   resolve: {
     extensions: ['.js', '.jsx', '.json'],
-    modules: [
-      path.resolve('node_modules'),
-      path.resolve('src')
-    ]
+    alias: {
+      '@': path.resolve('src')
+    }
   },
   module: {
     rules: [
       {
         test: /\.jsx?$/,
-        loader: 'babel-loader',
         include: path.resolve('src'),
+        loader: 'babel-loader',
         options: {
           cacheDirectory: true
         }
@@ -51,7 +50,8 @@ module.exports = {
     ]
   },
   stats: {
-    entrypoints: false
+    entrypoints: false,
+    warningsFilter: 'Conflicting order between:'
   },
   optimization: {
     splitChunks: {
@@ -60,7 +60,6 @@ module.exports = {
           test: /node_modules\//,
           name: 'common',
           priority: 10,
-          minChunks: 2,
           chunks: 'all',
           enforce: true
         }
@@ -74,6 +73,15 @@ module.exports = {
     hints: false
   },
   plugins: [
+    new WebpackBar(),
+    // ignoring Moment Locales
+    new webpack.IgnorePlugin({
+      resourceRegExp: /^\.\/locale$/,
+      contextRegExp: /moment$/
+    }),
+    new webpack.EnvironmentPlugin({
+      TITLE: config.title
+    }),
     new webpack.DllReferencePlugin({
       context: process.cwd(),
       manifest: vendorManifest
@@ -82,5 +90,5 @@ module.exports = {
       filepath: vendorPath,
       includeSourcemap: false
     })
-  ]
+  ].concat(process.env.ANALYZER === 'true' ? [new BundleAnalyzerPlugin()] : [])
 };

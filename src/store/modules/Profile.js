@@ -1,16 +1,20 @@
-import { observable, action, runInAction } from "mobx";
-import axios from "axios";
+import { observable, action, runInAction } from 'mobx';
+import axios from 'axios';
 
-export default class ProfileStore {
+export default class Profile {
   @observable id = '';
-  @observable name = '';
-  @observable avatar = '';
-  @observable location = '';
-  @observable createdAt = '';
-  @observable github = '';
-  @observable email = '';
 
-  constructor() {}
+  @observable name = '';
+
+  @observable avatar = '';
+
+  @observable location = '';
+
+  @observable createdAt = '';
+
+  @observable github = '';
+
+  @observable email = '';
 
   @action
   async fetchUser(name) {

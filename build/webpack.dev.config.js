@@ -1,5 +1,3 @@
-'use strict';
-
 const path = require('path');
 const chalk = require('chalk');
 const webpack = require('webpack');
@@ -16,11 +14,7 @@ module.exports = merge.smartStrategy({
   plugins: 'prepend'
 })(baseConfig, {
   entry: {
-    main: [
-      'eventsource-polyfill',
-      'react-hot-loader/patch',
-      'webpack-dev-server/client'
-    ]
+    main: ['event-source-polyfill']
   },
   output: {
     filename: '[name].js',
@@ -31,6 +25,7 @@ module.exports = merge.smartStrategy({
     clientLogLevel: 'warning',
     port: config.port,
     host: '0.0.0.0',
+    disableHostCheck: true,
     inline: true,
     historyApiFallback: {
       index: '/'
@@ -38,9 +33,9 @@ module.exports = merge.smartStrategy({
     hot: true,
     compress: true,
     quiet: true,
-    overlay: { 
-      warnings: false, 
-      errors: true 
+    overlay: {
+      warnings: false,
+      errors: true
     },
     proxy: config.proxy
   },
@@ -61,10 +56,13 @@ module.exports = merge.smartStrategy({
           {
             loader: 'css-loader',
             options: {
-              modules: true,
+              importLoaders: 1,
+              modules: {
+                mode: 'local',
+                localIdentName: '[name]__[local]--[hash:base64:5]'
+              },
               sourceMap: true,
-              camelCase: true,
-              localIdentName: '[name]__[local]--[hash:base64:5]'
+              localsConvention: 'camelCaseOnly'
             }
           },
           postcssLoader
@@ -89,13 +87,14 @@ module.exports = merge.smartStrategy({
   plugins: [
     new CopyWebpackPlugin([
       {
-        from: path.resolve(__dirname, '../static'),
-        to: 'static/',
+        from: path.resolve(__dirname, '../public'),
+        to: 'public/',
         ignore: ['.*']
       }
     ]),
     new webpack.HotModuleReplacementPlugin(),
     new FriendlyErrorsPlugin({
+      clearConsole: false,
       compilationSuccessInfo: {
         messages: [`Webpack dev server is running here: ${chalk.cyan(`http://127.0.0.1:${chalk.bold(config.port)}`)}`]
       }

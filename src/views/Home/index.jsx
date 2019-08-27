@@ -1,19 +1,19 @@
 import React from 'react';
 import { inject, observer } from 'mobx-react';
 
-@inject(({ homeStore }) => ({
-  homeStore
+@inject((stores) => ({
+  home: stores.home
 }))
 @observer
 export default class Home extends React.Component {
   componentDidMount() {
-    const { homeStore } = this.props;
+    const { home } = this.props;
 
-    homeStore.fetchIntro();
+    home.fetchIntro();
   }
 
   render() {
-    const { homeStore: { content } } = this.props;
+    const { home: { content } } = this.props;
 
     return (
       <section>

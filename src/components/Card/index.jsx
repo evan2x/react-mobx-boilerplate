@@ -11,8 +11,8 @@ function formatDate(date) {
   }
 
   const year = date.getFullYear();
-  const month = ('0' + (date.getMonth() + 1)).slice(-2);
-  const day = ('0' + date.getDate()).slice(-2);
+  const month = (`0${date.getMonth() + 1}`).slice(-2);
+  const day = (`0${date.getDate()}`).slice(-2);
 
   return `${year}-${month}-${day}`;
 }
@@ -31,24 +31,24 @@ function Card({
 
   if (isFetching) {
     content = <div className={styles.wait}>正在获取用户信息......</div>;
+  } else if (error) {
+    content = <div className={styles.error}>{error}</div>;
   } else {
-    if (error) {
-      content = <div className={styles.error}>{error}</div>;
-    } else {
-      content = <div>
+    content = (
+      <div>
         <h2>{name}</h2>
         <dl className={styles.info}>
           <dt className={styles.avatar}>
             <a href={github}>
-              <img src={avatar} />
+              <img src={avatar} alt="" />
             </a>
           </dt>
           <dd>location: {location}</dd>
           <dd>email: <a href={`mailto:${email}`}>{email}</a></dd>
           <dd>date created: {formatDate(createdAt)}</dd>
         </dl>
-      </div>;
-    }
+      </div>
+    );
   }
 
   return (
@@ -59,6 +59,11 @@ function Card({
 }
 
 Card.defaultProps = {
+  email: '',
+  github: '',
+  avatar: '',
+  location: '',
+  createdAt: '',
   error: '',
   isFetching: false
 };
