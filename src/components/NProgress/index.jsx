@@ -42,7 +42,7 @@ export default class NProgress extends React.PureComponent {
     nprogress.start();
   }
 
-  componentWillUnmount() {
+  componentDidMount() {
     nprogress.done(true);
   }
 
